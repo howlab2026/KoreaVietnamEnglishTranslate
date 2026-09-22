@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>실시간 다국어 라이브 자막 (KO · EN · VI)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css?v=3.5.0">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="eyebrow">AI REAL-TIME MULTILINGUAL LIVE CAPTION</div>
+        <h1 id="mainTitle">🇰🇷 한국어 → 🇻🇳 베트남어 · 🇺🇸 영어</h1>
+      </div>
+      <div class="topbar-actions">
+        <div id="status" class="status idle">대기 중</div>
+        <button id="historyModalBtn" class="history-toggle-btn" title="번역 기록 보기" type="button" aria-label="번역 기록 열기">
+          <span class="btn-icon">📜</span>
+          <span class="btn-label">번역 기록</span>
+          <span id="timerBadge" class="timer-badge">00:00</span>
+        </button>
+        <button id="themeToggleBtn" class="theme-toggle-btn" title="밤 모드 켜기/끄기" type="button" aria-label="밤 모드 토글">
+          <span id="themeIcon" class="theme-icon">🌙</span>
+          <span id="themeLabel" class="theme-label">밤 모드</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Language Selector Buttons -->
+    <section class="lang-selector-section">
+      <div class="lang-selector-label">🗣️ 발화 언어 선택 (말씀하실 언어를 선택하세요):</div>
+      <div class="lang-btn-group" role="radiogroup" aria-label="발화 언어 선택">
+        <button id="langKoBtn" class="lang-btn active" data-lang="ko" type="button">
+          <span class="flag">🇰🇷</span>
+          <span class="btn-text">
+            <strong>한국어로 말하기</strong>
+            <small>→ 베트남어 & 영어 번역</small>
+          </span>
+        </button>
+        <button id="langEnBtn" class="lang-btn" data-lang="en" type="button">
+          <span class="flag">🇺🇸</span>
+          <span class="btn-text">
+            <strong>Speak in English</strong>
+            <small>→ 베트남어 & 한국어 번역</small>
+          </span>
+        </button>
+        <button id="langViBtn" class="lang-btn" data-lang="vi" type="button">
+          <span class="flag">🇻🇳</span>
+          <span class="btn-text">
+            <strong>Nói Tiếng Việt</strong>
+            <small>→ 영어 & 한국어 번역</small>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Control Bar -->
+    <section class="controlbar">
+      <div class="mic-wrapper">
+        <label for="micSelect" class="mic-label">🎙️ 마이크:</label>
+        <select id="micSelect" class="mic-select" title="입력 마이크 선택">
+          <option value="">기본 마이크 (Default)</option>
+        </select>
+        <button id="micRefreshBtn" class="mic-refresh-btn" title="마이크 장치 목록 새로고침 / USB 인식" type="button">🔄</button>
+        <div class="mic-meter-container" title="마이크 입력 레벨">
+          <div id="micMeterBar" class="mic-meter-bar"></div>
+        </div>
+      </div>
+      <button id="startBtn" class="primary" type="button">🎤 번역 시작</button>
+      <button id="stopBtn" disabled type="button">⏹ 중지</button>
+      <button id="clearBtn" type="button">🧹 화면 지우기</button>
+      <label class="font-control">
+        자막 크기
+        <input id="fontSize" type="range" min="22" max="60" value="34">
+      </label>
+      <button id="fullscreenBtn" type="button">⛶ 전체화면</button>
+    </section>
+
+    <!-- Panels Layout: Top = 2 Translations (50% / 50%) | Bottom = Original Speech (100% full width) -->
+    <section class="panels">
+      <!-- Top Left: Translation 1 -->
+      <article id="target1Panel" class="panel panel-target-1" data-target-lang="vi">
+        <div class="panel-header">
+          <span id="target1Label" class="label">🇻🇳 TIẾNG VIỆT (베트남어 번역)</span>
+          <span class="panel-badge target-badge">실시간 번역</span>
+        </div>
+        <div id="target1Text" class="text target-text">베트남어 번역이 여기에 실시간으로 표시됩니다.</div>
+      </article>
+
+      <!-- Top Right: Translation 2 -->
+      <article id="target2Panel" class="panel panel-target-2" data-target-lang="en">
+        <div class="panel-header">
+          <span id="target2Label" class="label">🇺🇸 ENGLISH (영어 번역)</span>
+          <span class="panel-badge target-badge">실시간 번역</span>
+        </div>
+        <div id="target2Text" class="text target-text">영어 번역이 여기에 실시간으로 표시됩니다.</div>
+      </article>
+
+      <!-- Bottom Full Width: Original Speech Source -->
+      <article id="sourcePanel" class="panel panel-source">
+        <div class="panel-header">
+          <span id="sourceLabel" class="label">🇰🇷 한국어 원문 (발화)</span>
+          <span class="panel-badge source-badge">음성 인식</span>
+        </div>
+        <div id="sourceText" class="text source-text">마이크를 시작하고 말씀하시면 음성이 여기에 인식됩니다.</div>
+      </article>
+    </section>
+
+    <!-- Always Visible 1-Line Footer -->
+    <footer class="app-footer">
+      Gemini 3.5 Live Translate · 3-Way Real-time Caption (🇰🇷 한국어 ⇄ 🇺🇸 English ⇄ 🇻🇳 Tiếng Việt) v3.5.0
+    </footer>
+  </main>
+
+  <!-- History Modal Popup (Hidden by default, opened from topbar button) -->
+  <div id="historyModal" class="history-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="history-modal-content">
+      <div class="history-modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">📜</span>
+          <h2 id="modalTitle" class="modal-title">번역 기록 (Translation History)</h2>
+          <span id="timer" class="timer-display">00:00</span>
+        </div>
+        <div class="modal-actions">
+          <button id="clearHistoryBtn" class="modal-btn-sub" type="button" title="기록 지우기">🧹 기록 지우기</button>
+          <button id="closeHistoryModalBtn" class="modal-close-btn" type="button" title="닫기" aria-label="닫기">✕</button>
+        </div>
+      </div>
+      <div class="history-modal-body">
+        <div id="historyList" class="history-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js?v=3.5.0"></script>
+</body>
+</html>
