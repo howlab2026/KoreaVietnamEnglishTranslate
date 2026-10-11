@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css?v=3.5.0">
+  <link rel="stylesheet" href="/style.css?v=3.6.0">
 </head>
 <body>
   <main class="app">
@@ -72,6 +72,22 @@
         <div class="mic-meter-container" title="마이크 입력 레벨">
           <div id="micMeterBar" class="mic-meter-bar"></div>
         </div>
+      </div>
+      <!-- 창 표시/숨김 토글 버튼 3개 (원문, 번역언어1, 번역언어2) -->
+      <div class="panel-toggle-wrapper" role="group" aria-label="창 표시 제어">
+        <span class="panel-toggle-label">창 표시:</span>
+        <button id="toggleSourceBtn" class="panel-toggle-btn active" type="button" title="원문 창 표시/숨기기" aria-pressed="true">
+          <span class="toggle-icon">👁️</span>
+          <span id="toggleSourceText">원문</span>
+        </button>
+        <button id="toggleTarget1Btn" class="panel-toggle-btn active" type="button" title="번역언어 1 창 표시/숨기기" aria-pressed="true">
+          <span class="toggle-icon">👁️</span>
+          <span id="toggleTarget1Text">번역 1</span>
+        </button>
+        <button id="toggleTarget2Btn" class="panel-toggle-btn active" type="button" title="번역언어 2 창 표시/숨기기" aria-pressed="true">
+          <span class="toggle-icon">👁️</span>
+          <span id="toggleTarget2Text">번역 2</span>
+        </button>
       </div>
       <button id="startBtn" class="primary" type="button">🎤 번역 시작</button>
       <button id="stopBtn" disabled type="button">⏹ 중지</button>
@@ -139,6 +155,6 @@
     </div>
   </div>
 
-  <script src="/app.js?v=3.5.0"></script>
+  <script src="/app.js?v=3.6.0"></script>
 </body>
 </html>

@@ -671,6 +671,155 @@ input[type="range"] {
   color: var(--panel-source-label);
 }
 
+/* ─── Panel Visibility & Dynamic Adaptive Grid ─── */
+.panel.is-hidden {
+  display: none !important;
+}
+
+/* 1. 번역1만 숨겨진 경우 -> 번역2가 상단 1행 전체 폭(100%) 차지 */
+.panels.hide-target-1:not(.hide-target-2) .panel-target-2 {
+  grid-column: 1 / span 2;
+}
+
+/* 2. 번역2만 숨겨진 경우 -> 번역1이 상단 1행 전체 폭(100%) 차지 */
+.panels.hide-target-2:not(.hide-target-1) .panel-target-1 {
+  grid-column: 1 / span 2;
+}
+
+/* 3. 원문만 숨겨진 경우 -> 상단 번역 행이 화면 전체 높이 차지 */
+.panels.hide-source {
+  grid-template-rows: 1fr;
+}
+
+/* 4. 번역 둘 다 숨겨지고 원문만 남은 경우 -> 원문이 화면 전체(100% 폭 & 100% 높이) 차지 */
+.panels.hide-target-1.hide-target-2 {
+  grid-template-rows: 1fr;
+}
+.panels.hide-target-1.hide-target-2 .panel-source {
+  grid-column: 1 / span 2;
+  grid-row: 1;
+}
+
+/* 5. 원문과 번역1이 숨겨지고 번역2만 남은 경우 -> 번역2가 화면 전체 독점 */
+.panels.hide-source.hide-target-1 .panel-target-2 {
+  grid-column: 1 / span 2;
+  grid-row: 1;
+}
+
+/* 6. 원문과 번역2가 숨겨지고 번역1만 남은 경우 -> 번역1이 화면 전체 독점 */
+.panels.hide-source.hide-target-2 .panel-target-1 {
+  grid-column: 1 / span 2;
+  grid-row: 1;
+}
+
+/* ─── Panel Toggle Controls (Controlbar) ─── */
+.panel-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ctrl-bg);
+  padding: 5px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--ctrl-border);
+  box-shadow: var(--card-shadow);
+}
+
+.panel-toggle-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+  margin-right: 2px;
+}
+
+.panel-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--ctrl-input-bg);
+  color: var(--text-muted);
+  border: 1px solid var(--ctrl-input-border);
+  box-shadow: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.panel-toggle-btn:hover {
+  transform: translateY(-1px);
+  border-color: #94a3b8;
+  color: var(--text-primary);
+}
+
+.panel-toggle-btn .toggle-icon {
+  font-size: 12px;
+  line-height: 1;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Active State (Visible) */
+.panel-toggle-btn.active {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  border-color: rgba(37, 99, 235, 0.35);
+  font-weight: 800;
+}
+body.dark-theme .panel-toggle-btn.active {
+  background: rgba(96, 165, 250, 0.18);
+  color: #93c5fd;
+  border-color: rgba(96, 165, 250, 0.4);
+}
+
+#toggleTarget1Btn.active {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+  border-color: rgba(22, 163, 74, 0.35);
+}
+body.dark-theme #toggleTarget1Btn.active {
+  background: rgba(52, 211, 153, 0.18);
+  color: #6ee7b7;
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+#toggleTarget2Btn.active {
+  background: rgba(2, 132, 199, 0.1);
+  color: #0284c7;
+  border-color: rgba(2, 132, 199, 0.35);
+}
+body.dark-theme #toggleTarget2Btn.active {
+  background: rgba(56, 189, 248, 0.18);
+  color: #7dd3fc;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+#toggleSourceBtn.active {
+  background: rgba(79, 70, 229, 0.1);
+  color: #4f46e5;
+  border-color: rgba(79, 70, 229, 0.35);
+}
+body.dark-theme #toggleSourceBtn.active {
+  background: rgba(129, 140, 248, 0.18);
+  color: #c7d2fe;
+  border-color: rgba(129, 140, 248, 0.4);
+}
+
+/* Inactive State (Hidden) */
+.panel-toggle-btn.inactive {
+  opacity: 0.5;
+  background: transparent;
+  color: var(--text-muted);
+  border-color: var(--ctrl-input-border);
+  text-decoration: line-through;
+}
+.panel-toggle-btn.inactive .toggle-icon {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
 .panel-header {
   display: flex;
   justify-content: space-between;
@@ -1050,6 +1199,11 @@ body.dark-theme .history-item:hover {
     margin-left: 0;
     width: 100%;
     justify-content: space-between;
+  }
+  .panel-toggle-wrapper {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
   }
   .history-item .history-translations {
     grid-template-columns: 1fr;

@@ -116,6 +116,92 @@ const sourceText = $("sourceText");
 const target1Text = $("target1Text");
 const target2Text = $("target2Text");
 
+// Panel Toggle Buttons & Text Elements
+const toggleSourceBtn = $("toggleSourceBtn");
+const toggleTarget1Btn = $("toggleTarget1Btn");
+const toggleTarget2Btn = $("toggleTarget2Btn");
+const toggleSourceText = $("toggleSourceText");
+const toggleTarget1Text = $("toggleTarget1Text");
+const toggleTarget2Text = $("toggleTarget2Text");
+
+// Panel Visibility State (Default: all true)
+const panelVisibility = {
+  source: true,
+  target1: true,
+  target2: true
+};
+
+// Restore saved visibility preferences
+try {
+  const savedSource = localStorage.getItem("kv_panel_source");
+  const savedTarget1 = localStorage.getItem("kv_panel_target1");
+  const savedTarget2 = localStorage.getItem("kv_panel_target2");
+  if (savedSource !== null) panelVisibility.source = savedSource === "true";
+  if (savedTarget1 !== null) panelVisibility.target1 = savedTarget1 === "true";
+  if (savedTarget2 !== null) panelVisibility.target2 = savedTarget2 === "true";
+
+  // Prevent all being false
+  if (!panelVisibility.source && !panelVisibility.target1 && !panelVisibility.target2) {
+    panelVisibility.source = true;
+    panelVisibility.target1 = true;
+    panelVisibility.target2 = true;
+  }
+} catch (_) {}
+
+function updateToggleButtonState(btn, isVisible) {
+  if (!btn) return;
+  btn.classList.toggle("active", isVisible);
+  btn.classList.toggle("inactive", !isVisible);
+  btn.setAttribute("aria-pressed", String(isVisible));
+  const icon = btn.querySelector(".toggle-icon");
+  if (icon) {
+    icon.textContent = isVisible ? "👁️" : "🙈";
+  }
+}
+
+function updatePanelVisibility() {
+  const panelsEl = document.querySelector(".panels");
+  if (!panelsEl) return;
+
+  const sPanel = $("sourcePanel");
+  const t1Panel = $("target1Panel");
+  const t2Panel = $("target2Panel");
+
+  // Toggle individual panel display
+  sPanel?.classList.toggle("is-hidden", !panelVisibility.source);
+  t1Panel?.classList.toggle("is-hidden", !panelVisibility.target1);
+  t2Panel?.classList.toggle("is-hidden", !panelVisibility.target2);
+
+  // Toggle container adaptive grid classes
+  panelsEl.classList.toggle("hide-source", !panelVisibility.source);
+  panelsEl.classList.toggle("hide-target-1", !panelVisibility.target1);
+  panelsEl.classList.toggle("hide-target-2", !panelVisibility.target2);
+
+  // Update button visual states
+  updateToggleButtonState(toggleSourceBtn, panelVisibility.source);
+  updateToggleButtonState(toggleTarget1Btn, panelVisibility.target1);
+  updateToggleButtonState(toggleTarget2Btn, panelVisibility.target2);
+
+  // Persist to localStorage
+  try {
+    localStorage.setItem("kv_panel_source", String(panelVisibility.source));
+    localStorage.setItem("kv_panel_target1", String(panelVisibility.target1));
+    localStorage.setItem("kv_panel_target2", String(panelVisibility.target2));
+  } catch (_) {}
+}
+
+function togglePanel(panelKey) {
+  const activeCount = Object.values(panelVisibility).filter(Boolean).length;
+  // Prevent closing the last visible panel
+  if (panelVisibility[panelKey] && activeCount <= 1) {
+    alert("최소 1개의 창은 화면에 표시되어야 합니다.");
+    return;
+  }
+
+  panelVisibility[panelKey] = !panelVisibility[panelKey];
+  updatePanelVisibility();
+}
+
 const langBtns = {
   ko: $("langKoBtn"),
   en: $("langEnBtn"),
@@ -242,6 +328,11 @@ function setLanguage(langKey) {
   const target2Panel = $("target2Panel");
   if (target1Panel) target1Panel.dataset.targetLang = config.target1.code;
   if (target2Panel) target2Panel.dataset.targetLang = config.target2.code;
+
+  // Update toggle button labels
+  if (toggleSourceText) toggleSourceText.textContent = `원문 (${config.name})`;
+  if (toggleTarget1Text) toggleTarget1Text.textContent = `번역 1 (${config.target1.name})`;
+  if (toggleTarget2Text) toggleTarget2Text.textContent = `번역 2 (${config.target2.name})`;
 
   currentSource = "";
   currentTarget1 = "";
@@ -849,3 +940,13 @@ fullscreenBtn.addEventListener("click", async () => {
     await document.exitFullscreen();
   }
 });
+
+/* ─── Panel Toggle Event Listeners ─── */
+toggleSourceBtn?.addEventListener("click", () => togglePanel("source"));
+toggleTarget1Btn?.addEventListener("click", () => togglePanel("target1"));
+toggleTarget2Btn?.addEventListener("click", () => togglePanel("target2"));
+
+// Initial setup
+setLanguage(selectedLang);
+updatePanelVisibility();
+
